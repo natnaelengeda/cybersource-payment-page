@@ -74,6 +74,9 @@
     </form>
 
     <script>
+        const payButton = document.querySelector('#pay-button');
+        const flexResponse = document.querySelector('#flexresponse');
+
         window.receiveMicroformConfig = function (config) {
             console.log("Received config:", config);
             try {
@@ -104,13 +107,24 @@
 
         function initMicroform(captureContext) {
             if (!window.Flex) throw new Error('Flex library not present after load');
-            const flex = new Flex(captureContext);
-            const styles = { input: { 'font-size': '16px' } };
+            const flex = new Flex(captureContext); const myStyles = {
+                'input': {
+                    'font-size': '14px',
+                    'font-family': 'helvetica, tahoma, calibri, sans-serif',
+                    'color': '#555'
+                },
+                ':focus': { 'color': 'blue' },
+                ':disabled': { 'cursor': 'not-allowed' },
+                'valid': { 'color': '#3c763d' },
+                'invalid': { 'color': '#a94442' }
+            };
+
             const microform = flex.microform({ styles });
             const numberField = microform.createField('number', { placeholder: '•••• •••• •••• ••••' });
             const securityCodeField = microform.createField('securityCode', { placeholder: '•••' });
             numberField.load('#number-container');
             securityCodeField.load('#securityCode-container');
+
             console.log('Microform ready!');
         }
 
@@ -119,10 +133,33 @@
             document.getElementById('errors-output').textContent = msg;
         }
 
+        payButton.addEventListener('click', function () {
+
+            // Compiling MM & YY into optional parameters	 
+            const options = {
+                expirationMonth: document.querySelector('#expMonth').value,
+                expirationYear: document.querySelector('#expYear').value
+            };
+            //  
+            microform.createToken(options, function (err, token) {
+                if (err) {
+                    // handle error
+                    console.error(err);
+                    errorsOutput.textContent = err.message;
+                } else {
+                    // At this point you may pass the token back to your server as you wish.
+                    // In this example we append a hidden input to the form and submit it.      
+                    console.log(JSON.stringify(token));
+                    flexResponse.value = JSON.stringify(token);
+                    form.submit();
+                }
+            });
+        });
+
         // ---- TEST CONFIG (replace with your real values) ----
         // const testConfig = {
         //     clientLibrary: "https://testflex.cybersource.com/microform/bundle/v2.0.2/flex-microform.min.js",
-        //     clientLibraryIntegrity: "sha256-4TUKBd3VMIGGNs1ZLzfU6bG0YG4kUScSOtPu5ec7Ygo=", 
+        //     clientLibraryIntegrity: "sha256-4TUKBd3VMIGGNs1ZLzfU6bG0YG4kUScSOtPu5ec7Ygo=",
         //     captureContext: "eyJraWQiOiJ6dSIsImFsZyI6IlJTMjU2In0.eyJmbHgiOnsicGF0aCI6Ii9mbGV4L3YyL3Rva2VucyIsImRhdGEiOiJkeFhzZDJBeWlhQmtMRjZabzNndTd4QUFFSDJ0Zk5wSkFrOVdIbDl5SkxYMkIrMGRlL1JXU2xvOERxY2JTUERRZFJtME93Zkhzcyt4QXFRaVZkUk45SkpFWmNnQ01CVXhIS2w0eUhmdVNua3RHWHVWVEhLR1hzTXlITUh2WitzdTYzVlNSZ2s1RUFuRVExYlBJaGxWWUh0SkVSNElZbk5FcUNKUWxVVWx4R0duK09RcWZhU0NsL2dyZnhCTTZ0YTIyVFM3Iiwib3JpZ2luIjoiaHR0cHM6Ly90ZXN0ZmxleC5jeWJlcnNvdXJjZS5jb20iLCJqd2siOnsia3R5IjoiUlNBIiwiZSI6IkFRQUIiLCJ1c2UiOiJlbmMiLCJuIjoiNHlCMTdNRHlZWTZoYUlaYVpnbW1IVUphaE0tM1l6LWViOTM4SVZQTGN4VUJ1dGlsNi13MWRISUNLd0k2dWtWa09zcmZiVjBfTUlqakhJWHZLXzhDVGtMS1YzdVlpMVFLWFZjLVNtM05hOURXYU8tdWNRak5nWkdYYTZtcm1KLWpqQkxGMzJiRVpCMXVYNm5MUkVOcllJWVYweVYxR1hpNXRVZEVEU2NkZE44RFEwN1MzZ0pNbUlnV3RQQWhxbDY3SmNSb0xJclJYYklqWVdzMHg2SEVyMVU4U3paa0ZCZE5XTzJCak5TZm1HeFRHQ3RYX19lZ1lUTW1NczJwYjhaWVRxVjd0blV5TEhRYnpWR2lzQnN1M3djZXVBZmNQNzRlWUxUTTROMFZnQ1JCeVQycTBUckQta29uTExFeDlydHJrYnB0dGRDczJ6MzI1aldIa1ZuLVZRIiwia2lkIjoiMDhybUsxM21IdWl1R2pydTc1cm85Yk9mcmM4QzJ3NUEifX0sImN0eCI6W3siZGF0YSI6eyJjbGllbnRMaWJyYXJ5SW50ZWdyaXR5Ijoic2hhMjU2LTRUVUtCZDNWTUlHR05zMVpMemZVNmJHMFlHNGtVU2NTT3RQdTVlYzdZZ29cdTAwM2QiLCJjbGllbnRMaWJyYXJ5IjoiaHR0cHM6Ly90ZXN0ZmxleC5jeWJlcnNvdXJjZS5jb20vbWljcm9mb3JtL2J1bmRsZS92Mi4wLjIvZmxleC1taWNyb2Zvcm0ubWluLmpzIiwiYWxsb3dlZENhcmROZXR3b3JrcyI6WyJWSVNBIl0sInRhcmdldE9yaWdpbnMiOlsiaHR0cDovL2xvY2FsaG9zdDoyNzI3Il0sIm1mT3JpZ2luIjoiaHR0cHM6Ly90ZXN0ZmxleC5jeWJlcnNvdXJjZS5jb20ifSwidHlwZSI6Im1mLTIuMC4wIn1dLCJpc3MiOiJGbGV4IEFQSSIsImV4cCI6MTc1NTA4OTAyNCwiaWF0IjoxNzU1MDg4MTI0LCJqdGkiOiIxU1dvbjVqOUZad2FERnBaIn0.lYstBh0TxxIznljCPkRrC2eOXxhes6b5R5_CrxedwrpupUukKgom5psXsBssH_gfE0h-lQGD8gI2I-TYzw28mAqMFB97RupOpLuDFzKQiMnavPul03MKsfXa2DWuzFrRGzX1-KuDWdNCxIb9Aap3JeYPq7HWU2aWmLwLEOCaCwRC8cx_KCTJraMCbTDhz8YrGUqBuWIbFrEg9kBiLMaHbgNf25gs0Av6u_ZxqsJx19CtkSs1XaXIIewBP6VP7i4U8xwJwk0U9zdNgfLgUH7sQMEIiWp1obJb9hZSgNS7WCtlJ19hw_gqA_FSQf6td_ka7V6SkYNuGy1HTZMUPU2pUw"
         // };
 
