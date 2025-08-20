@@ -139,11 +139,12 @@
                     expirationYear: document.querySelector('#expYear').value.substring(2)
                 };
 
-                console.log('Creating token with options:', {
-                    "expirationMonth": options.expirationMonth,
-                    "expirationYear": options.expirationYear,
-                });
+                console.log('Creating token with options: ');
+                console.log("expirationMonth", options.expirationMonth);
+                console.log("expirationYear", options.expirationYear);
+
                 const cardholderName = document.querySelector('#cardholderName').value;
+                console.log("cardholderName", cardholderName);
 
                 microform.createToken(options, function (err, token) {
                     console.log(err);
