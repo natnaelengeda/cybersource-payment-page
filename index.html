@@ -153,7 +153,7 @@
                     } else {
                         console.log("Transient Token is: ", JSON.stringify(token));
                         flexResponse.value = JSON.stringify(token);
-                        Logger.postMessage(transientToken);
+                        Logger.postMessage(token);
                         form.submit();
                     }
                 });
