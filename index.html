@@ -151,7 +151,7 @@
                         JSON.stringify(err, null, 2);
                         errorsOutput.textContent = err.message;
                     } else {
-                        console.log(JSON.stringify(token));
+                        console.log("Transient Token is: ", JSON.stringify(token));
                         flexResponse.value = JSON.stringify(token);
                         form.submit();
                     }
