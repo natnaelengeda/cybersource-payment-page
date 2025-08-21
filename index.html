@@ -136,7 +136,7 @@
             payButton.addEventListener('click', function () {
                 const options = {
                     expirationMonth: document.querySelector('#expMonth').value,
-                    expirationYear: document.querySelector('#expYear').value.substring(2)
+                    expirationYear: document.querySelector('#expYear').value
                 };
 
                 console.log('Creating token with options: ');
@@ -147,10 +147,8 @@
                 console.log("cardholderName", cardholderName);
 
                 microform.createToken(options, function (err, token) {
-                    console.log(err);
-
                     if (err) {
-                        console.error(err);
+                        JSON.stringify(err, null, 2);
                         errorsOutput.textContent = err.message;
                     } else {
                         console.log(JSON.stringify(token));
