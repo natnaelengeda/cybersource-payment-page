@@ -49,6 +49,8 @@ window.addEventListener("message", async function (event) {
         console.log('[DDC]', ddcInfo);
         if (typeof AuthSetupHandler !== 'undefined' && AuthSetupHandler && typeof AuthSetupHandler.postMessage === 'function') {
             AuthSetupHandler.postMessage(JSON.stringify(ddcInfo));
+        } else {
+            console.warn('AuthSetupHandler not available');
         }
     }
 
@@ -56,5 +58,7 @@ window.addEventListener("message", async function (event) {
     console.log('[DeviceInfo]', JSON.stringify(deviceInfo));
     if (typeof AuthSetupHandler !== 'undefined' && AuthSetupHandler && typeof AuthSetupHandler.postMessage === 'function') {
         AuthSetupHandler.postMessage(JSON.stringify({ deviceInfo }));
+    } else {
+        console.warn('AuthSetupHandler not available');
     }
 }, false);

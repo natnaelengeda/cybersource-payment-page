@@ -79,7 +79,10 @@ function initMicroform(captureContext) {
                 flexResponse.value = JSON.stringify(token);
                 if (typeof MicroformHandler !== 'undefined' && MicroformHandler && typeof MicroformHandler.postMessage === 'function') {
                     MicroformHandler.postMessage(JSON.stringify({ deviceInfo }));
+                } else {
+                    console.warn('MicroformHandler not available');
                 }
+
                 form.submit();
             }
         });
