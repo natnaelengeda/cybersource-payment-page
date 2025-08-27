@@ -47,14 +47,14 @@ window.addEventListener("message", async function (event) {
         // Send the result back to Flutter
         const ddcInfo = { ddc: event.data };
         console.log('[DDC]', ddcInfo);
-        if (typeof Logger !== 'undefined' && Logger && typeof Logger.postMessage === 'function') {
-            Logger.postMessage(JSON.stringify(ddcInfo));
+        if (typeof AuthSetupHandler !== 'undefined' && AuthSetupHandler && typeof AuthSetupHandler.postMessage === 'function') {
+            AuthSetupHandler.postMessage(JSON.stringify(ddcInfo));
         }
     }
 
     const deviceInfo = await getDeviceInformation();
     console.log('[DeviceInfo]', JSON.stringify(deviceInfo));
-    if (typeof Logger !== 'undefined' && Logger && typeof Logger.postMessage === 'function') {
-        Logger.postMessage(JSON.stringify({ deviceInfo }));
+    if (typeof AuthSetupHandler !== 'undefined' && AuthSetupHandler && typeof AuthSetupHandler.postMessage === 'function') {
+        AuthSetupHandler.postMessage(JSON.stringify({ deviceInfo }));
     }
 }, false);

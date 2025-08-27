@@ -77,7 +77,9 @@ function initMicroform(captureContext) {
             } else {
                 console.log("Transient Token is: ", JSON.stringify(token));
                 flexResponse.value = JSON.stringify(token);
-                Logger.postMessage(token);
+                if (typeof MicroformHandler !== 'undefined' && MicroformHandler && typeof MicroformHandler.postMessage === 'function') {
+                    MicroformHandler.postMessage(JSON.stringify({ deviceInfo }));
+                }
                 form.submit();
             }
         });
