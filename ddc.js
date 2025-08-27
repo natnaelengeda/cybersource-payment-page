@@ -3,12 +3,32 @@
 window.receiveDataCollectionConfig = function (config) {
     const form = document.getElementById('cardinal_collection_form');
     const input = document.getElementById('cardinal_collection_form_input');
-
     form.action = config.deviceDataCollectionUrl;
-
     input.value = config.accessToken;
 
     form.submit();
+
+    // Listen for the response from Cardinal
+    window.addEventListener("message", async function (event) {
+        if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
+            // Send the result back to Flutter
+            const ddcInfo = { ddc: event.data };
+            console.log('[DDC]', ddcInfo);
+            if (typeof AuthSetupHandler !== 'undefined' && AuthSetupHandler && typeof AuthSetupHandler.postMessage === 'function') {
+                AuthSetupHandler.postMessage(JSON.stringify(ddcInfo));
+            } else {
+                console.warn('AuthSetupHandler not available');
+            }
+        }
+
+        const deviceInfo = await getDeviceInformation();
+        console.log('[DeviceInfo]', JSON.stringify(deviceInfo));
+        if (typeof AuthSetupHandler !== 'undefined' && AuthSetupHandler && typeof AuthSetupHandler.postMessage === 'function') {
+            AuthSetupHandler.postMessage(JSON.stringify({ deviceInfo }));
+        } else {
+            console.warn('AuthSetupHandler not available');
+        }
+    }, false);
 };
 
 // get public/external IP (falls back to empty string on error)
@@ -41,24 +61,3 @@ async function getDeviceInformation() {
         userAgentBrowserValue: navigator.userAgent
     };
 }
-// Listen for the response from Cardinal
-window.addEventListener("message", async function (event) {
-    if (event.origin === "https://centinelapistag.cardinalcommerce.com") {
-        // Send the result back to Flutter
-        const ddcInfo = { ddc: event.data };
-        console.log('[DDC]', ddcInfo);
-        if (typeof AuthSetupHandler !== 'undefined' && AuthSetupHandler && typeof AuthSetupHandler.postMessage === 'function') {
-            AuthSetupHandler.postMessage(JSON.stringify(ddcInfo));
-        } else {
-            console.warn('AuthSetupHandler not available');
-        }
-    }
-
-    const deviceInfo = await getDeviceInformation();
-    console.log('[DeviceInfo]', JSON.stringify(deviceInfo));
-    if (typeof AuthSetupHandler !== 'undefined' && AuthSetupHandler && typeof AuthSetupHandler.postMessage === 'function') {
-        AuthSetupHandler.postMessage(JSON.stringify({ deviceInfo }));
-    } else {
-        console.warn('AuthSetupHandler not available');
-    }
-}, false);
