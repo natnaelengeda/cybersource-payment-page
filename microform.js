@@ -83,8 +83,6 @@ function initMicroform(captureContext) {
                 } else {
                     console.warn('MicroformHandler not available');
                 }
-
-                form.submit();
             }
         });
     });
