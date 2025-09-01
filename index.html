@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
@@ -14,6 +14,8 @@
             --card-bg:#f8f9fb;
             --radius:8px;
         }
+
+        /* Base layout */
         body {
             font-family: Arial, sans-serif;
             padding: 24px;
@@ -21,7 +23,11 @@
             color:#111;
             display:flex;
             justify-content:center;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            margin:0;
         }
+
         .container{
             max-width:var(--max-width);
             width:100%;
@@ -33,28 +39,17 @@
             grid-template-columns:1fr 340px;
             gap:24px;
             align-items:start;
+            box-sizing:border-box;
         }
-        header h1{
-            margin:0 0 8px 0;
-            font-size:20px;
-        }
+
+        header h1{ margin:0 0 8px 0; font-size:20px }
         header p{ margin:0; color:var(--muted); font-size:13px }
 
         form { width:100% }
 
-        .form-section {
-            background:var(--card-bg);
-            padding:16px;
-            border-radius:8px;
-            margin-bottom:16px;
-        }
+        .form-section { background:var(--card-bg); padding:16px; border-radius:8px; margin-bottom:16px; }
 
-        label{
-            display:block;
-            font-size:13px;
-            margin-bottom:6px;
-            color:#222;
-        }
+        label{ display:block; font-size:13px; margin-bottom:6px; color:#222 }
 
         .form-control {
             width:100%;
@@ -67,43 +62,72 @@
             background:#fff;
         }
 
-        .two-col {
-            display:flex;
-            gap:12px;
-        }
+        .form-control:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 4px rgba(11,102,255,0.06); }
+
+        .two-col { display:flex; gap:12px }
         .two-col > * { flex:1 }
 
-        #errors-output {
-            color:var(--danger);
-            margin-bottom:12px;
-            min-height:18px;
-            font-size:13px;
-        }
+        #errors-output { color:var(--danger); margin-bottom:12px; min-height:18px; font-size:13px }
 
-        .summary {
-            border:1px solid #eef1f6;
-            padding:16px;
-            border-radius:8px;
-            background:#fafbfd;
-        }
+        .summary { border:1px solid #eef1f6; padding:16px; border-radius:8px; background:#fafbfd }
         .summary h3{ margin:0 0 8px 0 }
-        .summary .line { display:flex; justify-content:space-between; color:var(--muted); margin:8px 0; }
-        .summary .total { display:flex; justify-content:space-between; font-weight:600; font-size:18px; margin-top:12px; }
+        .summary .line { display:flex; justify-content:space-between; color:var(--muted); margin:8px 0 }
+        .summary .total { display:flex; justify-content:space-between; font-weight:600; font-size:18px; margin-top:12px }
 
-        #pay-button{
-            background:var(--accent);
-            color:#fff;
-            border:none;
-            padding:12px 16px;
-            border-radius:6px;
-            width:100%;
-            font-size:16px;
-            cursor:pointer;
-        }
+        #pay-button{ background:var(--accent); color:#fff; border:none; padding:12px 16px; border-radius:6px; width:100%; font-size:16px; cursor:pointer }
         #pay-button[disabled]{ opacity:0.6; cursor:not-allowed }
 
         .small { font-size:13px; color:var(--muted) }
         .muted { color:var(--muted) }
+
+        /* Accessibility: larger hit area for microform containers.
+           Limit height so injected microform iframes or inputs cannot expand the layout. */
+        #number-container, #securityCode-container {
+            min-height:44px;
+            max-height:52px; /* cap height to prevent stretching */
+            display:flex;
+            align-items:center;
+            overflow:hidden; /* hide any overflowing iframe content */
+            box-sizing:border-box;
+            padding:6px 8px; /* maintain internal spacing for microform content */
+        }
+
+        /* Constrain iframes or inputs injected by the microform provider */
+        #number-container iframe,
+        #securityCode-container iframe,
+        #number-container input,
+        #securityCode-container input {
+            height:100% !important;
+            max-height:40px !important;
+            min-height:0 !important;
+            border:0 !important;
+            display:block !important;
+            box-sizing:border-box !important;
+        }
+
+        /* Desktop: keep summary visible */
+        @media (min-width: 900px) { .summary { position:sticky; top:24px; align-self:start } }
+
+        /* Mobile / narrow screens */
+        @media (max-width: 880px) {
+            body { padding:16px }
+            .container{ grid-template-columns: 1fr; padding:16px; gap:16px }
+            .two-col { flex-direction: column }
+            .summary { order: 2 }
+            section { order: 1 }
+            header h1 { font-size:18px }
+            .form-control { min-height:48px; padding:10px }
+            #pay-button { padding:14px 16px; font-size:17px; border-radius:8px }
+            #number-container, #securityCode-container { min-height:56px; padding:8px }
+            .summary { width:100% }
+        }
+
+        @media (max-width: 420px) {
+            .container { padding:12px; gap:12px }
+            .form-section { padding:12px }
+            header h1 { font-size:16px }
+            .summary .total { font-size:16px }
+        }
     </style>
 </head>
 
@@ -112,7 +136,7 @@
         <section>
             <header>
                 <h1>Checkout</h1>
-                <p>Securely enter your card details. Card number and CVV are collected using the embedded microform.</p>
+                <p class="muted">Securely enter your card details. Card number and CVV are collected using the embedded microform.</p>
             </header>
 
             <div id="errors-output" role="alert" aria-live="polite"></div>
@@ -122,7 +146,7 @@
                     <h2 id="payment-details-heading" class="small">Payment details</h2>
 
                     <label for="cardholderName">Cardholder name</label>
-                    <input id="cardholderName" class="form-control" placeholder="Full name as shown on card" autocomplete="cc-name">
+                    <input id="cardholderName" class="form-control" placeholder="Full name as shown on card" autocomplete="cc-name" inputmode="text" spellcheck="false">
 
                     <label id="cardNumber-label">Card number</label>
                     <div id="number-container" class="form-control" aria-label="Card number (secure field)"></div>
@@ -148,7 +172,6 @@
 
                         <div>
                             <label for="expYear">Expiry year</label>
-                            <!-- use two-digit years (static content) -->
                             <select id="expYear" class="form-control" autocomplete="cc-exp-year">
                                 <option>25</option>
                                 <option>26</option>
@@ -173,11 +196,11 @@
                         <div class="two-col">
                             <div>
                                 <label for="billingCity">City</label>
-                                <input id="billingCity" class="form-control" placeholder="City" value="Addis Ababa">
+                                <input id="billingCity" class="form-control" placeholder="City">
                             </div>
                             <div>
                                 <label for="billingState">State / Province</label>
-                                <input id="billingState" class="form-control" placeholder="State">
+                                <input id="billingState" class="form-control" placeholder="State / Province">
                             </div>
                         </div>
 
@@ -188,7 +211,7 @@
                             </div>
                             <div>
                                 <label for="billingCountry">Country</label>
-                                <input id="billingCountry" class="form-control" placeholder="Country" value="Ethiopia">
+                                <input id="billingCountry" class="form-control" placeholder="Country" value="United States">
                                 <small class="small muted">Some fields (amount, currency, merchant) will be populated from the server.</small>
                             </div>
                         </div>
@@ -245,4 +268,5 @@
     <script src="ddc.js"></script>
 </body>
 
+</html>
 </html>
