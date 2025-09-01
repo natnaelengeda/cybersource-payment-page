@@ -4,87 +4,242 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>BoA Cybersource Input Form</title>
+    <title>Checkout — BoA Cybersource</title>
     <style>
+        :root{
+            --max-width:900px;
+            --accent:#0b66ff;
+            --muted:#666;
+            --danger:#b00020;
+            --card-bg:#f8f9fb;
+            --radius:8px;
+        }
         body {
             font-family: Arial, sans-serif;
-            padding: 16px;
+            padding: 24px;
+            background:#f2f4f7;
+            color:#111;
+            display:flex;
+            justify-content:center;
+        }
+        .container{
+            max-width:var(--max-width);
+            width:100%;
+            background:#fff;
+            border-radius:var(--radius);
+            box-shadow:0 8px 24px rgba(12,20,40,0.08);
+            padding:24px;
+            display:grid;
+            grid-template-columns:1fr 340px;
+            gap:24px;
+            align-items:start;
+        }
+        header h1{
+            margin:0 0 8px 0;
+            font-size:20px;
+        }
+        header p{ margin:0; color:var(--muted); font-size:13px }
+
+        form { width:100% }
+
+        .form-section {
+            background:var(--card-bg);
+            padding:16px;
+            border-radius:8px;
+            margin-bottom:16px;
+        }
+
+        label{
+            display:block;
+            font-size:13px;
+            margin-bottom:6px;
+            color:#222;
         }
 
         .form-control {
-            min-height: 44px;
-            border: 1px solid #ccc;
-            padding: 8px;
-            border-radius: 4px;
-            margin-bottom: 12px;
+            width:100%;
+            min-height:44px;
+            border:1px solid #d7dbe0;
+            padding:8px;
+            border-radius:6px;
+            margin-bottom:12px;
+            box-sizing:border-box;
+            background:#fff;
         }
 
-        #errors-output {
-            color: #b00020;
-            margin-bottom: 12px;
+        .two-col {
+            display:flex;
+            gap:12px;
         }
+        .two-col > * { flex:1 }
+
+        #errors-output {
+            color:var(--danger);
+            margin-bottom:12px;
+            min-height:18px;
+            font-size:13px;
+        }
+
+        .summary {
+            border:1px solid #eef1f6;
+            padding:16px;
+            border-radius:8px;
+            background:#fafbfd;
+        }
+        .summary h3{ margin:0 0 8px 0 }
+        .summary .line { display:flex; justify-content:space-between; color:var(--muted); margin:8px 0; }
+        .summary .total { display:flex; justify-content:space-between; font-weight:600; font-size:18px; margin-top:12px; }
+
+        #pay-button{
+            background:var(--accent);
+            color:#fff;
+            border:none;
+            padding:12px 16px;
+            border-radius:6px;
+            width:100%;
+            font-size:16px;
+            cursor:pointer;
+        }
+        #pay-button[disabled]{ opacity:0.6; cursor:not-allowed }
+
+        .small { font-size:13px; color:var(--muted) }
+        .muted { color:var(--muted) }
     </style>
 </head>
 
 <body>
-    <!-- Microform -->
-    <h1>Microform Embed</h1>
-    <div id="errors-output" role="alert" aria-live="polite"></div>
+    <div class="container" role="main">
+        <section>
+            <header>
+                <h1>Checkout</h1>
+                <p>Securely enter your card details. Card number and CVV are collected using the embedded microform.</p>
+            </header>
 
-    <form id="my-sample-form" method="post">
-        <div class="form-group">
-            <label for="cardholderName">Name</label>
-            <input id="cardholderName" class="form-control" placeholder="Name on the card">
-            <br>
-            <label id="cardNumber-label">Card Number</label>
-            <div id="number-container" class="form-control"></div>
-            <label for="securityCode-container">Security Code</label>
-            <div id="securityCode-container" class="form-control"></div>
-        </div>
+            <div id="errors-output" role="alert" aria-live="polite"></div>
 
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="expMonth">Expiry month</label>
-                <select id="expMonth" class="form-control">
-                    <option>01</option>
-                    <option>02</option>
-                    <option>03</option>
-                    <option>04</option>
-                    <option>05</option>
-                    <option>06</option>
-                    <option>07</option>
-                    <option>08</option>
-                    <option>09</option>
-                    <option>10</option>
-                    <option>11</option>
-                    <option>12</option>
-                </select>
+            <form id="my-sample-form" method="post" novalidate>
+                <div class="form-section" aria-labelledby="payment-details-heading">
+                    <h2 id="payment-details-heading" class="small">Payment details</h2>
+
+                    <label for="cardholderName">Cardholder name</label>
+                    <input id="cardholderName" class="form-control" placeholder="Full name as shown on card" autocomplete="cc-name">
+
+                    <label id="cardNumber-label">Card number</label>
+                    <div id="number-container" class="form-control" aria-label="Card number (secure field)"></div>
+
+                    <div class="two-col">
+                        <div>
+                            <label for="expMonth">Expiry month</label>
+                            <select id="expMonth" class="form-control" autocomplete="cc-exp-month">
+                                <option>01</option>
+                                <option>02</option>
+                                <option>03</option>
+                                <option>04</option>
+                                <option>05</option>
+                                <option>06</option>
+                                <option>07</option>
+                                <option>08</option>
+                                <option>09</option>
+                                <option>10</option>
+                                <option>11</option>
+                                <option>12</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="expYear">Expiry year</label>
+                            <!-- use two-digit years (static content) -->
+                            <select id="expYear" class="form-control" autocomplete="cc-exp-year">
+                                <option>25</option>
+                                <option>26</option>
+                                <option>27</option>
+                                <option>28</option>
+                                <option>29</option>
+                                <option>30</option>
+                                <option>31</option>
+                                <option>32</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label for="securityCode-container">Security code (CVV)</label>
+                    <div id="securityCode-container" class="form-control" aria-label="Security code (secure field)"></div>
+
+                    <div class="form-section" style="margin-top:8px;">
+                        <h3 class="small">Billing address</h3>
+                        <label for="billingAddress">Address</label>
+                        <input id="billingAddress" class="form-control" placeholder="Street address" autocomplete="street-address">
+
+                        <div class="two-col">
+                            <div>
+                                <label for="billingCity">City</label>
+                                <input id="billingCity" class="form-control" placeholder="City" value="Addis Ababa">
+                            </div>
+                            <div>
+                                <label for="billingState">State / Province</label>
+                                <input id="billingState" class="form-control" placeholder="State">
+                            </div>
+                        </div>
+
+                        <div class="two-col">
+                            <div>
+                                <label for="billingPostal">Postal code</label>
+                                <input id="billingPostal" class="form-control" placeholder="ZIP / Postal code" inputmode="numeric" autocomplete="postal-code">
+                            </div>
+                            <div>
+                                <label for="billingCountry">Country</label>
+                                <input id="billingCountry" class="form-control" placeholder="Country" value="Ethiopia">
+                                <small class="small muted">Some fields (amount, currency, merchant) will be populated from the server.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button type="button" id="pay-button" aria-live="polite">Pay</button>
+                <input type="hidden" id="flexresponse" name="flexresponse">
+            </form>
+        </section>
+
+        <aside class="summary" aria-labelledby="order-summary-heading">
+            <h3 id="order-summary-heading">Order summary</h3>
+
+            <div class="line">
+                <div class="muted">Merchant</div>
+                <div id="merchant" class="muted">Loading…</div>
             </div>
-            <div class="form-group col-md-6">
-                <label for="expYear">Expiry year</label>
-                <select id="expYear" class="form-control">
-                    <option>2025</option>
-                    <option>2026</option>
-                    <option>2027</option>
-                    <option>2028</option>
-                    <option>2029</option>
-                    <option>2030</option>
-                    <option>2031</option>
-                    <option>2032</option>
-                </select>
+
+            <div class="line">
+                <div class="muted">Description</div>
+                <div id="description" class="muted">—</div>
             </div>
-        </div>
 
-        <button type="button" id="pay-button">Pay</button>
-        <input type="hidden" id="flexresponse" name="flexresponse">
-    </form>
+            <div class="line">
+                <div class="muted">Currency</div>
+                <div id="currency" class="muted">USD</div>
+            </div>
 
-    <!-- Device Data Collection -->
-    <iframe id="cardinal_collection_iframe" name="collectionIframe" height="1" width="1"
-        style="display: none;"></iframe>
-    <form id="cardinal_collection_form" method="POST" target="collectionIframe">
-        <input id="cardinal_collection_form_input" type="hidden" name="JWT">
-    </form>
+            <div class="line">
+                <div class="muted">Subtotal</div>
+                <div id="subtotal" class="muted">Loading…</div>
+            </div>
+
+            <div class="total">
+                <div>Total</div>
+                <div id="order-total">Loading…</div>
+            </div>
+
+            <div style="margin-top:12px; font-size:13px" class="small">
+                Payment fields are tokenized. Card data never touches your server. Some values above will be filled by a remote API call.
+            </div>
+        </aside>
+
+        <!-- Device Data Collection -->
+        <iframe id="cardinal_collection_iframe" name="collectionIframe" height="1" width="1" style="display: none;"></iframe>
+        <form id="cardinal_collection_form" method="POST" target="collectionIframe">
+            <input id="cardinal_collection_form_input" type="hidden" name="JWT">
+        </form>
+    </div>
 
     <script src="microform.js"></script>
     <script src="ddc.js"></script>
