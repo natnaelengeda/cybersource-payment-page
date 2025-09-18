@@ -1,210 +1,393 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Checkout — BoA Cybersource</title>
     <style>
-        :root{
-            --max-width:900px;
-            --accent:#0b66ff;
-            --muted:#666;
-            --danger:#b00020;
-            --card-bg:#f8f9fb;
-            --radius:8px;
-        }
+      :root {
+        --max-width: 900px;
+        --accent: #0b66ff;
+        --muted: #666;
+        --danger: #b00020;
+        --card-bg: #f8f9fb;
+        --radius: 8px;
+      }
 
-        /* Base layout */
-        body {
-            font-family: Arial, sans-serif;
-            padding: 24px;
-            background:#f2f4f7;
-            color:#111;
-            display:flex;
-            justify-content:center;
-            -webkit-font-smoothing:antialiased;
-            -moz-osx-font-smoothing:grayscale;
-            margin:0;
-        }
+      /* Base layout */
+      body {
+        font-family: Arial, sans-serif;
+        padding: 24px;
+        background: #f2f4f7;
+        color: #111;
+        display: flex;
+        justify-content: center;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        margin: 0;
+      }
 
-        .container{
-            max-width:var(--max-width);
-            width:100%;
-            background:#fff;
-            border-radius:var(--radius);
-            box-shadow:0 8px 24px rgba(12,20,40,0.08);
-            padding:24px;
-            display:grid;
-            grid-template-columns:1fr 340px;
-            gap:24px;
-            align-items:start;
-            box-sizing:border-box;
-        }
+      .container {
+        max-width: var(--max-width);
+        width: 100%;
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: 0 8px 24px rgba(12, 20, 40, 0.08);
+        padding: 24px;
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 24px;
+        align-items: start;
+        box-sizing: border-box;
+      }
 
-        header h1{ margin:0 0 8px 0; font-size:20px }
-        header p{ margin:0; color:var(--muted); font-size:13px }
+      header h1 {
+        margin: 0 0 8px 0;
+        font-size: 20px;
+      }
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
 
-        form { width:100% }
+      form {
+        width: 100%;
+      }
 
-        .form-section { background:var(--card-bg); padding:16px; border-radius:8px; margin-bottom:16px; }
+      .form-section {
+        background: var(--card-bg);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
 
-        label{ display:block; font-size:13px; margin-bottom:6px; color:#222 }
+      label {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 6px;
+        color: #222;
+      }
 
-        .form-control {
-            width:100%;
-            min-height:44px;
-            border:1px solid #d7dbe0;
-            padding:8px;
-            border-radius:6px;
-            margin-bottom:12px;
-            box-sizing:border-box;
-            background:#fff;
-        }
+      .form-control {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid #d7dbe0;
+        padding: 8px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        box-sizing: border-box;
+        background: #fff;
+      }
 
-        .form-control:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 4px rgba(11,102,255,0.06); }
+      .form-control:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(11, 102, 255, 0.06);
+      }
 
-        .two-col { display:flex; gap:12px }
-        .two-col > * { flex:1 }
+      .two-col {
+        display: flex;
+        gap: 12px;
+      }
+      .two-col > * {
+        flex: 1;
+      }
 
-        #errors-output { color:var(--danger); margin-bottom:12px; min-height:18px; font-size:13px }
+      #errors-output {
+        color: var(--danger);
+        margin-bottom: 12px;
+        min-height: 18px;
+        font-size: 13px;
+      }
 
-        .summary { border:1px solid #eef1f6; padding:16px; border-radius:8px; background:#fafbfd }
-        .summary h3{ margin:0 0 8px 0 }
-        .summary .line { display:flex; justify-content:space-between; color:var(--muted); margin:8px 0 }
-        .summary .total { display:flex; justify-content:space-between; font-weight:600; font-size:18px; margin-top:12px }
+      .summary {
+        border: 1px solid #eef1f6;
+        padding: 16px;
+        border-radius: 8px;
+        background: #fafbfd;
+      }
+      .summary h3 {
+        margin: 0 0 8px 0;
+      }
+      .summary .line {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        margin: 8px 0;
+      }
+      .summary .total {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 600;
+        font-size: 18px;
+        margin-top: 12px;
+      }
 
-        #pay-button{ background:var(--accent); color:#fff; border:none; padding:12px 16px; border-radius:6px; width:100%; font-size:16px; cursor:pointer }
-        #pay-button[disabled]{ opacity:0.6; cursor:not-allowed }
+      #pay-button {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        padding: 12px 16px;
+        border-radius: 6px;
+        width: 100%;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #pay-button[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-        .small { font-size:13px; color:var(--muted) }
-        .muted { color:var(--muted) }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .muted {
+        color: var(--muted);
+      }
 
-        /* Accessibility: larger hit area for microform containers.
+      /* Accessibility: larger hit area for microform containers.
            Limit height so injected microform iframes or inputs cannot expand the layout. */
-        #number-container, #securityCode-container {
-            min-height:44px;
-            max-height:52px; /* cap height to prevent stretching */
-            display:flex;
-            align-items:center;
-            overflow:hidden; /* hide any overflowing iframe content */
-            box-sizing:border-box;
-            padding:6px 8px; /* maintain internal spacing for microform content */
-        }
+      #number-container,
+      #securityCode-container {
+        min-height: 44px;
+        max-height: 52px; /* cap height to prevent stretching */
+        display: flex;
+        align-items: center;
+        overflow: hidden; /* hide any overflowing iframe content */
+        box-sizing: border-box;
+        padding: 6px 8px; /* maintain internal spacing for microform content */
+      }
 
-        /* Constrain iframes or inputs injected by the microform provider */
-        #number-container iframe,
-        #securityCode-container iframe,
-        #number-container input,
-        #securityCode-container input {
-            height:100% !important;
-            max-height:40px !important;
-            min-height:0 !important;
-            border:0 !important;
-            display:block !important;
-            box-sizing:border-box !important;
-        }
+      /* Constrain iframes or inputs injected by the microform provider */
+      #number-container iframe,
+      #securityCode-container iframe,
+      #number-container input,
+      #securityCode-container input {
+        height: 100% !important;
+        max-height: 40px !important;
+        min-height: 0 !important;
+        border: 0 !important;
+        display: block !important;
+        box-sizing: border-box !important;
+      }
 
-        /* Desktop: keep summary visible */
-        @media (min-width: 900px) { .summary { position:sticky; top:24px; align-self:start } }
+      .payment-row {
+        display: flex;
+        margin-top: 20px;
+        justify-content: space-between;
+        align-items: center;
+        width: auto;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-family: Arial, sans-serif;
+      }
 
-        /* Mobile / narrow screens */
-        @media (max-width: 880px) {
-            body { padding:16px }
-            .container{ grid-template-columns: 1fr; padding:16px; gap:16px }
-            .two-col { flex-direction: column }
-            .summary { order: 2 }
-            section { order: 1 }
-            header h1 { font-size:18px }
-            .form-control { min-height:48px; padding:10px }
-            #pay-button { padding:14px 16px; font-size:17px; border-radius:8px }
-            #number-container, #securityCode-container { min-height:56px; padding:8px }
-            .summary { width:100% }
-        }
+      .payment-text {
+        font-size: 16px;
+        font-weight: bold;
+      }
 
-        @media (max-width: 420px) {
-            .container { padding:12px; gap:12px }
-            .form-section { padding:12px }
-            header h1 { font-size:16px }
-            .summary .total { font-size:16px }
+      .payment-icons img {
+        height: 30px;
+        margin-left: 10px;
+      }
+
+      /* Desktop: keep summary visible */
+      @media (min-width: 900px) {
+        .summary {
+          position: sticky;
+          top: 24px;
+          align-self: start;
         }
+      }
+
+      /* Mobile / narrow screens */
+      @media (max-width: 880px) {
+        body {
+          padding: 16px;
+        }
+        .container {
+          grid-template-columns: 1fr;
+          padding: 16px;
+          gap: 16px;
+        }
+        .two-col {
+          flex-direction: column;
+        }
+        .summary {
+          order: 2;
+        }
+        section {
+          order: 1;
+        }
+        header h1 {
+          font-size: 18px;
+        }
+        .form-control {
+          min-height: 48px;
+          padding: 10px;
+        }
+        #pay-button {
+          padding: 14px 16px;
+          font-size: 17px;
+          border-radius: 8px;
+        }
+        #number-container,
+        #securityCode-container {
+          min-height: 56px;
+          padding: 8px;
+        }
+        .summary {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .container {
+          padding: 12px;
+          gap: 12px;
+        }
+        .form-section {
+          padding: 12px;
+        }
+        header h1 {
+          font-size: 16px;
+        }
+        .summary .total {
+          font-size: 16px;
+        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="container" role="main">
-        <section>
-            <header>
-                <h1>Checkout</h1>
-                <p class="muted">Securely enter your card details. Card number and CVV are collected using the embedded microform.</p>
-            </header>
+      <section>
+        <header>
+          <h1>Checkout</h1>
+          <p class="muted">
+            Securely enter your card details. Card number and CVV are collected
+            using the embedded microform.
+          </p>
+        </header>
 
-            <div id="errors-output" role="alert" aria-live="polite"></div>
+        <div class="payment-row">
+          <div class="payment-text">Credit or Debit Card</div>
+          <div class="payment-icons">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png"
+              alt="Mastercard"
+            />
+            <img
+              src="https://cdn4.iconfinder.com/data/icons/flat-brand-logo-2/512/visa-512.png"
+              alt="Visa"
+            />
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg"
+              alt="American Express"
+            />
+          </div>
+        </div>
 
-            <form id="my-sample-form" method="post" novalidate>
-                <div class="form-section" aria-labelledby="payment-details-heading">
-                    <h2 id="payment-details-heading" class="small">Payment details</h2>
+        <div id="errors-output" role="alert" aria-live="polite"></div>
 
-                    <label for="cardholderName">Cardholder name</label>
-                    <input id="cardholderName" class="form-control" placeholder="Full name as shown on card" autocomplete="cc-name" inputmode="text" spellcheck="false">
+        <form id="my-sample-form" method="post" novalidate>
+          <div class="form-section" aria-labelledby="payment-details-heading">
+            <h2 id="payment-details-heading" class="small">Payment details</h2>
 
-                    <label id="cardNumber-label">Card number</label>
-                    <div id="number-container" class="form-control" aria-label="Card number (secure field)"></div>
+            <label for="cardholderName">Cardholder name</label>
+            <input
+              id="cardholderName"
+              class="form-control"
+              placeholder="Full name as shown on card"
+              autocomplete="cc-name"
+              inputmode="text"
+              spellcheck="false"
+            />
 
-                    <div class="two-col">
-                        <div>
-                            <label for="expMonth">Expiry month</label>
-                            <select id="expMonth" class="form-control" autocomplete="cc-exp-month">
-                                <option>01</option>
-                                <option>02</option>
-                                <option>03</option>
-                                <option>04</option>
-                                <option>05</option>
-                                <option>06</option>
-                                <option>07</option>
-                                <option>08</option>
-                                <option>09</option>
-                                <option>10</option>
-                                <option>11</option>
-                                <option>12</option>
-                            </select>
-                        </div>
+            <label id="cardNumber-label">Card number</label>
+            <div
+              id="number-container"
+              class="form-control"
+              aria-label="Card number (secure field)"
+            ></div>
 
-                        <div>
-                            <label for="expYear">Expiry year</label>
-                            <select id="expYear" class="form-control" autocomplete="cc-exp-year">
-                                <option>2025</option>
-                                <option>2026</option>
-                                <option>2027</option>
-                                <option>2028</option>
-                                <option>2029</option>
-                                <option>2030</option>
-                                <option>2031</option>
-                                <option>2032</option>
-                            </select>
-                        </div>
-                    </div>
+            <div class="two-col">
+              <div>
+                <label for="expMonth">Expiry month</label>
+                <select
+                  id="expMonth"
+                  class="form-control"
+                  autocomplete="cc-exp-month"
+                >
+                  <option>01</option>
+                  <option>02</option>
+                  <option>03</option>
+                  <option>04</option>
+                  <option>05</option>
+                  <option>06</option>
+                  <option>07</option>
+                  <option>08</option>
+                  <option>09</option>
+                  <option>10</option>
+                  <option>11</option>
+                  <option>12</option>
+                </select>
+              </div>
 
-                    <label for="securityCode-container">Security code (CVV)</label>
-                    <div id="securityCode-container" class="form-control" aria-label="Security code (secure field)"></div>
+              <div>
+                <label for="expYear">Expiry year</label>
+                <select
+                  id="expYear"
+                  class="form-control"
+                  autocomplete="cc-exp-year"
+                >
+                  <option>2025</option>
+                  <option>2026</option>
+                  <option>2027</option>
+                  <option>2028</option>
+                  <option>2029</option>
+                  <option>2030</option>
+                  <option>2031</option>
+                  <option>2032</option>
+                </select>
+              </div>
+            </div>
 
-                </div>
+            <label for="securityCode-container">Security code (CVV)</label>
+            <div
+              id="securityCode-container"
+              class="form-control"
+              aria-label="Security code (secure field)"
+            ></div>
+          </div>
 
-                <button type="button" id="pay-button" aria-live="polite">Pay</button>
-                <input type="hidden" id="flexresponse" name="flexresponse">
-            </form>
-        </section>
-
-        <!-- Device Data Collection -->
-        <iframe id="cardinal_collection_iframe" name="collectionIframe" height="1" width="1" style="display: none;"></iframe>
-        <form id="cardinal_collection_form" method="POST" target="collectionIframe">
-            <input id="cardinal_collection_form_input" type="hidden" name="JWT">
+          <button type="button" id="pay-button" aria-live="polite">Pay</button>
+          <input type="hidden" id="flexresponse" name="flexresponse" />
         </form>
+      </section>
+
+      <!-- Device Data Collection -->
+      <iframe
+        id="cardinal_collection_iframe"
+        name="collectionIframe"
+        height="1"
+        width="1"
+        style="display: none"
+      ></iframe>
+      <form
+        id="cardinal_collection_form"
+        method="POST"
+        target="collectionIframe"
+      >
+        <input id="cardinal_collection_form_input" type="hidden" name="JWT" />
+      </form>
     </div>
 
     <script src="microform.js"></script>
     <script src="ddc.js"></script>
-</body>
-
-</html>
+  </body>
 </html>
